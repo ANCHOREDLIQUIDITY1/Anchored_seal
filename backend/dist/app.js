@@ -13,6 +13,7 @@ const cookie_parser_1 = __importDefault(require("cookie-parser"));
 const AppError_1 = __importDefault(require("./utils/AppError"));
 const errorHandler_1 = require("./middlewares/errorHandler");
 const authRoutes_1 = __importDefault(require("./routes/authRoutes"));
+const agreementRoutes_1 = __importDefault(require("./routes/agreementRoutes"));
 const app = (0, express_1.default)();
 // 1. GLOBAL MIDDLEWARES
 // Secure HTTP headers
@@ -44,7 +45,7 @@ app.get('/health', (req, res) => {
     res.status(200).json({ success: true, message: 'TrustSeal API is running.' });
 });
 app.use('/api/v1/auth', authRoutes_1.default);
-// app.use('/api/v1/agreements', agreementRouter);
+app.use('/api/v1/agreements', agreementRoutes_1.default);
 // 3. UNHANDLED ROUTES
 app.all('*', (req, res, next) => {
     next(new AppError_1.default(`Can't find ${req.originalUrl} on this server!`, 404));

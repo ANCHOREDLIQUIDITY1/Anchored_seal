@@ -1,8 +1,14 @@
 import { Request, Response, NextFunction } from 'express';
 import AppError from '../utils/AppError';
 
+type CustomError = Error & {
+  statusCode?: number;
+  status?: string;
+  isOperational?: boolean;
+};
+
 export const globalErrorHandler = (
-  err: any,
+  err: CustomError,
   req: Request,
   res: Response,
   next: NextFunction

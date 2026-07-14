@@ -9,6 +9,7 @@ import cookieParser from 'cookie-parser';
 import AppError from './utils/AppError';
 import { globalErrorHandler } from './middlewares/errorHandler';
 import authRouter from './routes/authRoutes';
+import agreementRouter from './routes/agreementRoutes';
 
 const app: Application = express();
 
@@ -50,7 +51,7 @@ app.get('/health', (req: Request, res: Response) => {
 });
 
 app.use('/api/v1/auth', authRouter);
-// app.use('/api/v1/agreements', agreementRouter);
+app.use('/api/v1/agreements', agreementRouter);
 
 // 3. UNHANDLED ROUTES
 app.all('*', (req: Request, res: Response, next: NextFunction) => {
