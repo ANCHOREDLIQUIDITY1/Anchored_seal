@@ -11,7 +11,7 @@ export const globalErrorHandler = (
   err.status = err.status || 'error';
 
   // Log error for debugging
-  console.error('ERROR 💥', err);
+  console.error('ERROR', err);
 
   if (err.isOperational) {
     res.status(err.statusCode).json({

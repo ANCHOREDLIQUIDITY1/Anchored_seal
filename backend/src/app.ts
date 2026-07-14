@@ -4,9 +4,11 @@ import helmet from 'helmet';
 import mongoSanitize from 'express-mongo-sanitize';
 import rateLimit from 'express-rate-limit';
 import pinoHttp from 'pino-http';
+import cookieParser from 'cookie-parser';
 
 import AppError from './utils/AppError';
 import { globalErrorHandler } from './middlewares/errorHandler';
+import authRouter from './routes/authRoutes';
 
 const app: Application = express();
 
@@ -37,6 +39,7 @@ app.use('/api', limiter);
 // Body parser, reading data from body into req.body
 app.use(express.json({ limit: '10kb' }));
 app.use(express.urlencoded({ extended: true, limit: '10kb' }));
+app.use(cookieParser());
 
 // Data sanitization against NoSQL query injection
 app.use(mongoSanitize());
@@ -46,7 +49,7 @@ app.get('/health', (req: Request, res: Response) => {
   res.status(200).json({ success: true, message: 'TrustSeal API is running.' });
 });
 
-// app.use('/api/v1/auth', authRouter);
+app.use('/api/v1/auth', authRouter);
 // app.use('/api/v1/agreements', agreementRouter);
 
 // 3. UNHANDLED ROUTES
