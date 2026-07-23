@@ -12,12 +12,27 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
   const pathname = usePathname();
   const router = useRouter();
   const [user, setUser] = useState<{ name: string; plan: string } | null>(null);
+  const [pendingCount, setPendingCount] = useState<number | null>(null);
 
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
     if (storedUser) {
       setUser(JSON.parse(storedUser));
     }
+    
+    // Fetch pending agreements count
+    const fetchPendingCount = async () => {
+      try {
+        if (!localStorage.getItem("token")) return;
+        const { api } = await import("@/lib/api");
+        const response = await api.agreements.getAll();
+        const count = response.data.filter((a: any) => a.status === 'pending' || a.status === 'partially_signed').length;
+        setPendingCount(count);
+      } catch (err) {
+        console.error("Failed to fetch pending count", err);
+      }
+    };
+    fetchPendingCount();
   }, []);
 
   const handleLogout = () => {
@@ -28,7 +43,7 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
 
   const navItems = [
     { name: "Dashboard", href: "/dashboard", icon: Home },
-    { name: "Agreements", href: "/dashboard/agreements", icon: FileText, badge: "6" },
+    { name: "Agreements", href: "/dashboard/agreements", icon: FileText, badge: pendingCount !== null && pendingCount > 0 ? pendingCount.toString() : undefined },
     { name: "New Agreement", href: "/dashboard/new", icon: Plus },
     { name: "Templates", href: "/dashboard/templates", icon: LayoutGrid },
     { name: "Activity", href: "/dashboard/activity", icon: Activity },

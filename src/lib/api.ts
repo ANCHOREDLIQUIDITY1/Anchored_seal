@@ -22,5 +22,47 @@ export const api = {
       if (!res.ok) throw new Error(data.message || 'Registration failed');
       return data;
     }
+  },
+  agreements: {
+    getAll: async () => {
+      const token = localStorage.getItem('token');
+      const res = await fetch(`${API_URL}/agreements`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || 'Failed to fetch agreements');
+      return data;
+    },
+    getById: async (id: string) => {
+      const token = localStorage.getItem('token');
+      const res = await fetch(`${API_URL}/agreements/${id}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || 'Failed to fetch agreement');
+      return data;
+    },
+    create: async (payload: any) => {
+      const token = localStorage.getItem('token');
+      const res = await fetch(`${API_URL}/agreements`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || 'Failed to create agreement');
+      return data;
+    }
   }
 };

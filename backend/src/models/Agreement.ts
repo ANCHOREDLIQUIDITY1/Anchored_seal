@@ -17,6 +17,8 @@ export interface IParty {
 export interface IAgreement extends Document {
   title: string;
   shortId: string;
+  description?: string;
+  value?: string;
   category: 'Business Partnership' | 'Freelance Contract' | 'Loan Agreement' | 'NDA' | 'Personal Agreement' | 'Custom Agreement';
   status: 'draft' | 'pending' | 'partially_signed' | 'signed' | 'rejected' | 'expired' | 'cancelled';
   creator: Types.ObjectId;
@@ -48,6 +50,8 @@ const agreementSchema = new Schema<IAgreement>(
   {
     title: { type: String, required: true, maxlength: 200 },
     shortId: { type: String, required: true, unique: true },
+    description: { type: String },
+    value: { type: String },
     category: { 
       type: String, 
       enum: ['Business Partnership', 'Freelance Contract', 'Loan Agreement', 'NDA', 'Personal Agreement', 'Custom Agreement'],
@@ -74,7 +78,7 @@ const agreementSchema = new Schema<IAgreement>(
 );
 
 // State Machine logic
-agreementSchema.pre('save', function (next: any) {
+agreementSchema.pre('save', function () {
   if (this.isModified('parties') && this.status !== 'cancelled' && this.status !== 'expired') {
     // If sent (not draft)
     if (this.status !== 'draft') {
@@ -96,8 +100,6 @@ agreementSchema.pre('save', function (next: any) {
   if (this.expiresAt && new Date() > this.expiresAt) {
     this.status = 'expired';
   }
-  
-  next();
 });
 
 export const Agreement = mongoose.model<IAgreement>('Agreement', agreementSchema);

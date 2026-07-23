@@ -8,19 +8,27 @@ import { randomUUID } from 'crypto';
 // 1. Create a new Agreement
 export const createAgreement = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { title, category, parties, clauses } = req.body;
+    const { title, category, description, value, expiresAt, parties, clauses } = req.body;
     const shortId = randomUUID().substring(0, 8);
 
     const newAgreement = await Agreement.create({
       title,
       shortId,
       category,
+      description,
+      value,
+      expiresAt,
       creator: req.user?._id,
       parties: parties?.map((p: any) => ({
         ...p,
         token: randomUUID()
       })) || [],
-      clauses
+      clauses,
+      auditTrail: [{
+        action: 'CREATED',
+        actor: req.user?.email || 'Creator',
+        timestamp: new Date()
+      }]
     });
 
     res.status(201).json({ success: true, data: newAgreement });
