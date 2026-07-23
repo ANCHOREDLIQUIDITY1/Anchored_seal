@@ -42,8 +42,7 @@ app.use(express.json({ limit: '10kb' }));
 app.use(express.urlencoded({ extended: true, limit: '10kb' }));
 app.use(cookieParser());
 
-// Data sanitization against NoSQL query injection
-app.use(mongoSanitize());
+// Data sanitization against NoSQL query injection (Removed due to Express 5 compatibility issue)
 
 // 2. ROUTES
 app.get('/health', (req: Request, res: Response) => {
@@ -54,7 +53,7 @@ app.use('/api/v1/auth', authRouter);
 app.use('/api/v1/agreements', agreementRouter);
 
 // 3. UNHANDLED ROUTES
-app.all('*', (req: Request, res: Response, next: NextFunction) => {
+app.use((req: Request, res: Response, next: NextFunction) => {
   next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));
 });
 

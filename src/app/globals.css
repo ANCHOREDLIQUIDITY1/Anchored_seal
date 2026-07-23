@@ -21,6 +21,12 @@
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   
+  /* Auth UI specific colors */
+  --color-bg-page: #F4F3ED; /* Warm off-white */
+  --color-bg-card: #EBE7DD; /* Slightly darker stone color */
+  --color-bg-input: #F4F3ED; /* Light input fill */
+  --color-border-input: #DCD8CC; /* Subtle border */
+  
   /* Brand colors */
   --color-primary: #1A472A;
   --color-accent: #C9A84C;
