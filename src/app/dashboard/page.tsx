@@ -1,6 +1,7 @@
 "use client";
 
 import { useSyncExternalStore, useMemo, useEffect, useState } from "react";
+import Link from "next/link";
 import { 
   FileText, Check, Clock, X,
   LayoutGrid, PlusSquare, History,
@@ -155,10 +156,10 @@ export default function Dashboard() {
             Here&apos;s what&apos;s happening with your agreements.
           </p>
         </div>
-        <button className="bg-(--color-primary) hover:bg-[#153a22] text-white px-5 py-3 rounded-lg font-bold flex items-center justify-center gap-2 transition-colors w-full md:w-auto">
+        <Link href="/dashboard/new" className="bg-(--color-primary) hover:bg-[#153a22] text-white px-5 py-3 rounded-lg font-bold flex items-center justify-center gap-2 transition-colors w-full md:w-auto">
           <PlusSquare className="w-5 h-5" />
           New Agreement
-        </button>
+        </Link>
       </div>
 
       {error && (
@@ -215,7 +216,7 @@ export default function Dashboard() {
           <div className="flex items-center justify-between">
             <h2 className="font-bold text-lg text-gray-900">Recent Agreements</h2>
             {recentAgreements.length > 0 && (
-              <a href="#" className="text-xs font-bold text-[#3B7B56] hover:underline">View all →</a>
+              <Link href="/dashboard/agreements" className="text-xs font-bold text-[#3B7B56] hover:underline">View all →</Link>
             )}
           </div>
 
@@ -225,9 +226,9 @@ export default function Dashboard() {
                 <FileText className="w-10 h-10 text-gray-300 mb-3" />
                 <h3 className="font-bold text-gray-900">No agreements yet</h3>
                 <p className="text-sm text-gray-500 mt-1 mb-4 max-w-xs">Create your first agreement to start securely signing documents.</p>
-                <button className="bg-(--color-primary) hover:bg-[#153a22] text-white px-4 py-2 rounded-lg font-bold text-sm transition-colors">
+                <Link href="/dashboard/new" className="bg-(--color-primary) hover:bg-[#153a22] text-white px-4 py-2 rounded-lg font-bold text-sm transition-colors inline-block">
                   Create Agreement
-                </button>
+                </Link>
               </div>
             ) : (
               recentAgreements.map((agreement) => {
@@ -255,7 +256,12 @@ export default function Dashboard() {
 
         {/* Activity Feed */}
         <div className="flex flex-col gap-4">
-          <h2 className="font-bold text-lg text-gray-900">Activity</h2>
+          <div className="flex items-center justify-between">
+            <h2 className="font-bold text-lg text-gray-900">Activity</h2>
+            {activityFeed.length > 0 && (
+              <Link href="/dashboard/activity" className="text-xs font-bold text-[#3B7B56] hover:underline">View all →</Link>
+            )}
+          </div>
           <div className="bg-(--color-bg-card) rounded-lg p-5 flex flex-col gap-6 h-72.5 overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] scrollbar-none">
             {activityFeed.length === 0 ? (
               <div className="flex flex-col items-center justify-center h-full text-center text-gray-500">
@@ -294,22 +300,22 @@ export default function Dashboard() {
       <div className="flex flex-col gap-4 mt-6">
         <h2 className="font-bold text-lg text-gray-900">Quick Actions</h2>
         <div className="flex flex-wrap gap-3">
-          <button className="bg-(--color-bg-card) hover:bg-[#e4e1d6] text-gray-900 px-4 py-3 rounded-lg font-bold text-sm flex items-center gap-2 transition-colors">
+          <Link href="/dashboard/templates" className="bg-(--color-bg-card) hover:bg-[#e4e1d6] text-gray-900 px-4 py-3 rounded-lg font-bold text-sm flex items-center gap-2 transition-colors">
             <LayoutGrid className="w-4 h-4 text-(--color-primary)" />
             Create from Template
-          </button>
-          <button className="bg-(--color-bg-card) hover:bg-[#e4e1d6] text-gray-900 px-4 py-3 rounded-lg font-bold text-sm flex items-center gap-2 transition-colors">
+          </Link>
+          <Link href="/dashboard/new" className="bg-(--color-bg-card) hover:bg-[#e4e1d6] text-gray-900 px-4 py-3 rounded-lg font-bold text-sm flex items-center gap-2 transition-colors">
             <PlusSquare className="w-4 h-4 text-[#3B7B56]" />
             New Custom Agreement
-          </button>
-          <button className="bg-(--color-bg-card) hover:bg-[#e4e1d6] text-gray-900 px-4 py-3 rounded-lg font-bold text-sm flex items-center gap-2 transition-colors">
+          </Link>
+          <Link href="/dashboard/agreements" className="bg-(--color-bg-card) hover:bg-[#e4e1d6] text-gray-900 px-4 py-3 rounded-lg font-bold text-sm flex items-center gap-2 transition-colors">
             <Clock className="w-4 h-4 text-[#D97706]" />
             View Pending
-          </button>
-          <button className="bg-(--color-bg-card) hover:bg-[#e4e1d6] text-gray-900 px-4 py-3 rounded-lg font-bold text-sm flex items-center gap-2 transition-colors">
+          </Link>
+          <Link href="/dashboard/activity" className="bg-(--color-bg-card) hover:bg-[#e4e1d6] text-gray-900 px-4 py-3 rounded-lg font-bold text-sm flex items-center gap-2 transition-colors">
             <History className="w-4 h-4 text-gray-500" />
             Activity Log
-          </button>
+          </Link>
         </div>
       </div>
 

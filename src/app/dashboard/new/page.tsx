@@ -1,11 +1,12 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { 
-  Check, ChevronLeft, ChevronRight, Send, Shield, Plus, X 
+  Check, ChevronLeft, ChevronRight, Send, Shield, Plus, X, LayoutGrid 
 } from "lucide-react";
 import { api } from "@/lib/api";
+import { getTemplateBySlug } from "@/lib/templates";
 
 type Step = 1 | 2 | 3 | 4;
 
@@ -30,11 +31,13 @@ interface FormData {
   clauses: Clause[];
 }
 
-export default function NewAgreementPage() {
+function NewAgreementForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [currentStep, setCurrentStep] = useState<Step>(1);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [templateName, setTemplateName] = useState<string | null>(null);
 
   const [formData, setFormData] = useState<FormData>({
     title: "",
@@ -67,7 +70,25 @@ export default function NewAgreementPage() {
         }, 0);
       } catch (e) {}
     }
-  }, []);
+
+    // Pre-fill from template if query param exists
+    const templateSlug = searchParams.get("template");
+    if (templateSlug) {
+      const template = getTemplateBySlug(templateSlug);
+      if (template) {
+        setTemplateName(template.name);
+        setTimeout(() => {
+          setFormData(prev => ({
+            ...prev,
+            title: template.name,
+            category: template.category,
+            description: template.longDescription,
+            clauses: template.clauses.map(c => ({ order: c.order, content: c.content })),
+          }));
+        }, 0);
+      }
+    }
+  }, [searchParams]);
 
   const handleNext = () => setCurrentStep(s => Math.min(s + 1, 4) as Step);
   const handlePrev = () => setCurrentStep(s => Math.max(s - 1, 1) as Step);
@@ -161,6 +182,12 @@ export default function NewAgreementPage() {
       <div>
         <h1 className="font-bold text-2xl text-gray-900">New Agreement</h1>
         <p className="text-gray-500 text-sm mt-1">Create a legally recordable digital agreement</p>
+        {templateName && (
+          <div className="mt-3 flex items-center gap-2 bg-[#E8F3EC] px-3 py-2 rounded-lg">
+            <LayoutGrid className="w-4 h-4 text-[#3B7B56]" />
+            <span className="text-xs font-bold text-[#3B7B56]">Using template: {templateName}</span>
+          </div>
+        )}
       </div>
 
       {/* Stepper */}
@@ -467,5 +494,19 @@ export default function NewAgreementPage() {
 
       </div>
     </div>
+  );
+}
+
+export default function NewAgreementPage() {
+  return (
+    <Suspense fallback={
+      <div className="flex flex-col gap-8 pb-10 animate-pulse">
+        <div className="h-20 bg-gray-200 rounded-lg w-full" />
+        <div className="h-12 bg-gray-200 rounded-lg w-full max-w-md" />
+        <div className="h-96 bg-gray-200 rounded-lg w-full" />
+      </div>
+    }>
+      <NewAgreementForm />
+    </Suspense>
   );
 }
