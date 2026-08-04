@@ -46,10 +46,9 @@ const signatureSchema = new mongoose_1.Schema({
     ipAddress: { type: String }
 }, { timestamps: true });
 // Enforce only one default signature per user
-signatureSchema.pre('save', async function (next) {
+signatureSchema.pre('save', async function () {
     if (this.isModified('isDefault') && this.isDefault) {
         await mongoose_1.default.model('Signature').updateMany({ user: this.user, _id: { $ne: this._id } }, { $set: { isDefault: false } });
     }
-    next();
 });
 exports.Signature = mongoose_1.default.model('Signature', signatureSchema);

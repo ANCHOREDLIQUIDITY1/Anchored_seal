@@ -13,8 +13,8 @@ const signToken = (id, secret, expiresIn) => {
 const createSendTokens = (user, statusCode, req, res) => {
     const accessSecret = process.env.JWT_SECRET || 'dev_access_secret_do_not_use_in_prod';
     const refreshSecret = process.env.JWT_REFRESH_SECRET || 'dev_refresh_secret_do_not_use_in_prod';
-    const accessToken = signToken(user._id.toString(), accessSecret, process.env.JWT_EXPIRES_IN || '7d');
-    const refreshToken = signToken(user._id.toString(), refreshSecret, '30d');
+    const accessToken = signToken(String(user._id), accessSecret, process.env.JWT_EXPIRES_IN || '7d');
+    const refreshToken = signToken(String(user._id), refreshSecret, '30d');
     // Set refresh token in httpOnly cookie
     res.cookie('refreshToken', refreshToken, {
         expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days
@@ -87,7 +87,7 @@ const refreshToken = async (req, res, next) => {
         // Issue new tokens (Token rotation)
         createSendTokens(currentUser, 200, req, res);
     }
-    catch (err) {
+    catch {
         next(new AppError_1.default('Invalid refresh token. Please log in again.', 401));
     }
 };

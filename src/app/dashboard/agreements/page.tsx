@@ -25,8 +25,8 @@ export default function AgreementsPage() {
       try {
         const response = await api.agreements.getAll();
         setAgreements(response.data);
-      } catch (err: any) {
-        setError(err.message || "Failed to load agreements");
+      } catch (err: unknown) {
+        setError(err instanceof Error ? err.message : "Failed to load agreements");
       } finally {
         setLoading(false);
       }
@@ -114,7 +114,7 @@ export default function AgreementsPage() {
       doc.text("Parties Involved", 20, yPos);
       yPos += 8;
       
-      agreement.parties.forEach((party, idx) => {
+      agreement.parties.forEach((party) => {
         if (yPos > 270) { doc.addPage(); yPos = 20; }
         doc.setFontSize(11);
         doc.text(`${party.name} (${party.email}) - ${party.role}`, 20, yPos);

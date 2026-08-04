@@ -1,7 +1,6 @@
 import express, { Application, Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
-import mongoSanitize from 'express-mongo-sanitize';
 import rateLimit from 'express-rate-limit';
 import pinoHttp from 'pino-http';
 import cookieParser from 'cookie-parser';
@@ -10,6 +9,7 @@ import AppError from './utils/AppError';
 import { globalErrorHandler } from './middlewares/errorHandler';
 import authRouter from './routes/authRoutes';
 import agreementRouter from './routes/agreementRoutes';
+import userRouter from './routes/userRoutes';
 
 const app: Application = express();
 
@@ -51,6 +51,7 @@ app.get('/health', (req: Request, res: Response) => {
 
 app.use('/api/v1/auth', authRouter);
 app.use('/api/v1/agreements', agreementRouter);
+app.use('/api/v1/users', userRouter);
 
 // 3. UNHANDLED ROUTES
 app.use((req: Request, res: Response, next: NextFunction) => {

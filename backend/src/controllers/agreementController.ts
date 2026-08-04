@@ -19,7 +19,7 @@ export const createAgreement = async (req: Request, res: Response, next: NextFun
       value,
       expiresAt,
       creator: req.user?._id,
-      parties: parties?.map((p: any) => ({
+      parties: parties?.map((p: Record<string, unknown>) => ({
         ...p,
         token: randomUUID()
       })) || [],
@@ -123,7 +123,7 @@ export const sendAgreement = async (req: Request, res: Response, next: NextFunct
     // Trigger Email Service for parties
     for (const party of agreement.parties) {
       if (party.role !== 'creator') {
-        await EmailService.sendInvitation(party.email, (agreement._id as any).toString(), party.token);
+        await EmailService.sendInvitation(party.email, String(agreement._id), party.token);
       }
     }
 
@@ -148,7 +148,7 @@ export const getAgreementByToken = async (req: Request, res: Response, next: Nex
       await agreement.save();
     }
 
-    res.status(200).json({ success: true, data: { agreement, partyId: (party as any)?._id } });
+    res.status(200).json({ success: true, data: { agreement, partyId: (party as unknown as { _id?: unknown })?._id } });
   } catch (err) {
     next(err);
   }
@@ -188,7 +188,7 @@ export const signAgreement = async (req: Request, res: Response, next: NextFunct
       await agreement.save();
       
       for (const p of agreement.parties) {
-         await EmailService.sendCompletion(p.email, (agreement._id as any).toString(), 'link-to-pdf');
+         await EmailService.sendCompletion(p.email, String(agreement._id), 'link-to-pdf');
       }
     }
 

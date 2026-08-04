@@ -4,15 +4,15 @@ import { User, IUser } from '../models/User';
 import AppError from '../utils/AppError';
 
 const signToken = (id: string, secret: string, expiresIn: string) => {
-  return jwt.sign({ id }, secret, { expiresIn: expiresIn as any });
+  return jwt.sign({ id }, secret, { expiresIn: expiresIn as jwt.SignOptions['expiresIn'] });
 };
 
 const createSendTokens = (user: IUser, statusCode: number, req: Request, res: Response) => {
   const accessSecret = process.env.JWT_SECRET || 'dev_access_secret_do_not_use_in_prod';
   const refreshSecret = process.env.JWT_REFRESH_SECRET || 'dev_refresh_secret_do_not_use_in_prod';
   
-  const accessToken = signToken((user._id as any).toString(), accessSecret, process.env.JWT_EXPIRES_IN || '7d');
-  const refreshToken = signToken((user._id as any).toString(), refreshSecret, '30d');
+  const accessToken = signToken(String(user._id), accessSecret, process.env.JWT_EXPIRES_IN || '7d');
+  const refreshToken = signToken(String(user._id), refreshSecret, '30d');
 
   // Set refresh token in httpOnly cookie
   res.cookie('refreshToken', refreshToken, {
@@ -43,8 +43,8 @@ export const register = async (req: Request, res: Response, next: NextFunction) 
     });
 
     createSendTokens(newUser, 201, req, res);
-  } catch (err: any) {
-    if (err.code === 11000) {
+  } catch (err: unknown) {
+    if ((err as { code?: number }).code === 11000) {
       return next(new AppError('Email already exists. Please login.', 400));
     }
     next(err);
@@ -95,7 +95,7 @@ export const refreshToken = async (req: Request, res: Response, next: NextFuncti
 
     // Issue new tokens (Token rotation)
     createSendTokens(currentUser, 200, req, res);
-  } catch (err) {
+  } catch {
     next(new AppError('Invalid refresh token. Please log in again.', 401));
   }
 };

@@ -51,6 +51,8 @@ const partySchema = new mongoose_1.Schema({
 const agreementSchema = new mongoose_1.Schema({
     title: { type: String, required: true, maxlength: 200 },
     shortId: { type: String, required: true, unique: true },
+    description: { type: String },
+    value: { type: String },
     category: {
         type: String,
         enum: ['Business Partnership', 'Freelance Contract', 'Loan Agreement', 'NDA', 'Personal Agreement', 'Custom Agreement'],
@@ -74,7 +76,7 @@ const agreementSchema = new mongoose_1.Schema({
     completedAt: { type: Date }
 }, { timestamps: true });
 // State Machine logic
-agreementSchema.pre('save', function (next) {
+agreementSchema.pre('save', function () {
     if (this.isModified('parties') && this.status !== 'cancelled' && this.status !== 'expired') {
         // If sent (not draft)
         if (this.status !== 'draft') {
@@ -97,6 +99,5 @@ agreementSchema.pre('save', function (next) {
     if (this.expiresAt && new Date() > this.expiresAt) {
         this.status = 'expired';
     }
-    next();
 });
 exports.Agreement = mongoose_1.default.model('Agreement', agreementSchema);

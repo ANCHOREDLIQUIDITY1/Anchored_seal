@@ -4,7 +4,7 @@ import { useEffect, useState, useMemo } from "react";
 import Link from "next/link";
 import { 
   History, Search, PenTool, Send, Eye, PlusSquare, 
-  Download, Filter, ArrowUpRight, FileText, AlertCircle 
+  Download, ArrowUpRight, AlertCircle 
 } from "lucide-react";
 import { api } from "@/lib/api";
 import { IAgreement, IAuditTrail } from "@/types";
@@ -43,16 +43,20 @@ export default function ActivityPage() {
       const storedUser = localStorage.getItem("user");
       if (storedUser) {
         const parsed = JSON.parse(storedUser);
-        if (parsed.email) setCurrentUserEmail(parsed.email.toLowerCase());
+        if (parsed.email) {
+          setTimeout(() => setCurrentUserEmail(parsed.email.toLowerCase()), 0);
+        }
       }
-    } catch (e) {}
+    } catch (e: unknown) {
+      console.error(e);
+    }
 
     const fetchAgreements = async () => {
       try {
         const response = await api.agreements.getAll();
         setAgreements(response.data);
-      } catch (err: any) {
-        setError(err.message || "Failed to load activity log");
+      } catch (err: unknown) {
+        setError(err instanceof Error ? err.message : "Failed to load activity log");
       } finally {
         setLoading(false);
       }
@@ -304,7 +308,6 @@ export default function ActivityPage() {
           <div className="divide-y divide-[#DCD8CC]/60">
             {filteredActivities.map((activity, idx) => {
               const actorLabel = getActorLabel(activity.actor);
-              const isYou = actorLabel === "You";
 
               // Construct intuitive sentence based on action
               let actionPhrase = "interacted with";

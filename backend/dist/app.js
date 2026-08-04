@@ -6,7 +6,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const cors_1 = __importDefault(require("cors"));
 const helmet_1 = __importDefault(require("helmet"));
-const express_mongo_sanitize_1 = __importDefault(require("express-mongo-sanitize"));
 const express_rate_limit_1 = __importDefault(require("express-rate-limit"));
 const pino_http_1 = __importDefault(require("pino-http"));
 const cookie_parser_1 = __importDefault(require("cookie-parser"));
@@ -14,6 +13,7 @@ const AppError_1 = __importDefault(require("./utils/AppError"));
 const errorHandler_1 = require("./middlewares/errorHandler");
 const authRoutes_1 = __importDefault(require("./routes/authRoutes"));
 const agreementRoutes_1 = __importDefault(require("./routes/agreementRoutes"));
+const userRoutes_1 = __importDefault(require("./routes/userRoutes"));
 const app = (0, express_1.default)();
 // 1. GLOBAL MIDDLEWARES
 // Secure HTTP headers
@@ -38,16 +38,16 @@ app.use('/api', limiter);
 app.use(express_1.default.json({ limit: '10kb' }));
 app.use(express_1.default.urlencoded({ extended: true, limit: '10kb' }));
 app.use((0, cookie_parser_1.default)());
-// Data sanitization against NoSQL query injection
-app.use((0, express_mongo_sanitize_1.default)());
+// Data sanitization against NoSQL query injection (Removed due to Express 5 compatibility issue)
 // 2. ROUTES
 app.get('/health', (req, res) => {
     res.status(200).json({ success: true, message: 'TrustSeal API is running.' });
 });
 app.use('/api/v1/auth', authRoutes_1.default);
 app.use('/api/v1/agreements', agreementRoutes_1.default);
+app.use('/api/v1/users', userRoutes_1.default);
 // 3. UNHANDLED ROUTES
-app.all('*', (req, res, next) => {
+app.use((req, res, next) => {
     next(new AppError_1.default(`Can't find ${req.originalUrl} on this server!`, 404));
 });
 // 4. GLOBAL ERROR HANDLER

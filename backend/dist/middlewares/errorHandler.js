@@ -1,7 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.globalErrorHandler = void 0;
-const globalErrorHandler = (err, req, res, next) => {
+const globalErrorHandler = (err, req, res, 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+_next) => {
     err.statusCode = err.statusCode || 500;
     err.status = err.status || 'error';
     // Log error for debugging

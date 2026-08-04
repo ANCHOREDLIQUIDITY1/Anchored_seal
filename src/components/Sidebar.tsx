@@ -7,6 +7,7 @@ import {
   Shield, Home, FileText, Plus, LayoutGrid, 
   Activity, User, Moon, LogOut, X 
 } from "lucide-react";
+import { IAgreement } from "@/types";
 
 export default function Sidebar({ onClose }: { onClose?: () => void }) {
   const pathname = usePathname();
@@ -17,7 +18,13 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
     if (storedUser) {
-      setUser(JSON.parse(storedUser));
+      setTimeout(() => {
+        try {
+          setUser(JSON.parse(storedUser));
+        } catch (e) {
+          console.error(e);
+        }
+      }, 0);
     }
     
     // Fetch pending agreements count
@@ -26,9 +33,9 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
         if (!localStorage.getItem("token")) return;
         const { api } = await import("@/lib/api");
         const response = await api.agreements.getAll();
-        const count = response.data.filter((a: any) => a.status === 'pending' || a.status === 'partially_signed').length;
+        const count = response.data.filter((a: IAgreement) => a.status === 'pending' || a.status === 'partially_signed').length;
         setPendingCount(count);
-      } catch (err) {
+      } catch (err: unknown) {
         console.error("Failed to fetch pending count", err);
       }
     };

@@ -5,6 +5,7 @@ import AppError from '../utils/AppError';
 
 // Extend express Request to include user
 declare global {
+  // eslint-disable-next-line @typescript-eslint/no-namespace
   namespace Express {
     interface Request {
       user?: IUser;
@@ -47,7 +48,7 @@ export const protect = async (req: Request, res: Response, next: NextFunction) =
     // GRANT ACCESS TO PROTECTED ROUTE
     req.user = currentUser;
     next();
-  } catch (err) {
+  } catch {
     next(new AppError('Invalid or expired token. Please log in again.', 401));
   }
 };

@@ -45,6 +45,7 @@ const userSchema = new mongoose_1.Schema({
     password: { type: String, select: false },
     googleId: { type: String, select: false },
     avatar: { type: String },
+    phone: { type: String, trim: true },
     plan: { type: String, enum: ['free', 'pro', 'business'], required: true, default: 'free' },
     role: { type: String, enum: ['user', 'admin', 'superadmin'], required: true, default: 'user' },
     preferences: {
@@ -59,13 +60,12 @@ const userSchema = new mongoose_1.Schema({
     passwordResetToken: { type: String, select: false }
 }, { timestamps: true });
 // Hash password before saving
-userSchema.pre('save', async function (next) {
+userSchema.pre('save', async function () {
     if (!this.isModified('password'))
-        return next();
+        return;
     if (this.password) {
         this.password = await bcrypt_1.default.hash(this.password, 12);
     }
-    next();
 });
 // Compare password method
 userSchema.methods.comparePassword = async function (candidatePassword) {

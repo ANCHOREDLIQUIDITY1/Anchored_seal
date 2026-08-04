@@ -26,14 +26,13 @@ const signatureSchema = new Schema<ISignature>(
 );
 
 // Enforce only one default signature per user
-signatureSchema.pre('save', async function (next: any) {
+signatureSchema.pre('save', async function () {
   if (this.isModified('isDefault') && this.isDefault) {
     await mongoose.model('Signature').updateMany(
       { user: this.user, _id: { $ne: this._id } },
       { $set: { isDefault: false } }
     );
   }
-  next();
 });
 
 export const Signature = mongoose.model<ISignature>('Signature', signatureSchema);

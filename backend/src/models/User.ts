@@ -7,6 +7,7 @@ export interface IUser extends Document {
   password?: string;
   googleId?: string;
   avatar?: string;
+  phone?: string;
   plan: 'free' | 'pro' | 'business';
   role: 'user' | 'admin' | 'superadmin';
   preferences: {
@@ -29,6 +30,7 @@ const userSchema = new Schema<IUser>(
     password: { type: String, select: false }, 
     googleId: { type: String, select: false },
     avatar: { type: String },
+    phone: { type: String, trim: true },
     plan: { type: String, enum: ['free', 'pro', 'business'], required: true, default: 'free' },
     role: { type: String, enum: ['user', 'admin', 'superadmin'], required: true, default: 'user' },
     preferences: {

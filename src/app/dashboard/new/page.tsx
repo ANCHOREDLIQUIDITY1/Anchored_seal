@@ -68,7 +68,9 @@ function NewAgreementForm() {
             return { ...prev, parties: newParties };
           });
         }, 0);
-      } catch (e) {}
+      } catch (e: unknown) {
+        console.error(e);
+      }
     }
 
     // Pre-fill from template if query param exists
@@ -76,8 +78,8 @@ function NewAgreementForm() {
     if (templateSlug) {
       const template = getTemplateBySlug(templateSlug);
       if (template) {
-        setTemplateName(template.name);
         setTimeout(() => {
+          setTemplateName(template.name);
           setFormData(prev => ({
             ...prev,
             title: template.name,
@@ -144,7 +146,7 @@ function NewAgreementForm() {
     setError(null);
     try {
       // Filter out empty parties and clauses
-      const payload: any = {
+      const payload: Partial<FormData> = {
         ...formData,
         parties: formData.parties.filter(p => p.name.trim() !== "" && p.email.trim() !== ""),
         clauses: formData.clauses.filter(c => c.content.trim() !== "")
@@ -154,7 +156,7 @@ function NewAgreementForm() {
         delete payload.expiresAt;
       }
 
-      const res = await api.agreements.create(payload);
+      const res = await api.agreements.create(payload as Record<string, unknown>);
       
       // Redirect to the newly created agreement
       if (res.success && res.data && res.data._id) {
@@ -162,8 +164,8 @@ function NewAgreementForm() {
       } else {
         router.push(`/dashboard/agreements`);
       }
-    } catch (err: any) {
-      setError(err.message || "Failed to create agreement");
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "Failed to create agreement");
       setLoading(false);
     }
   };
@@ -193,7 +195,7 @@ function NewAgreementForm() {
       {/* Stepper */}
       <div className="flex items-center justify-between relative mt-4">
         <div className="absolute left-0 right-0 top-1/2 h-0.5 bg-gray-200 -z-10 transform -translate-y-1/2 rounded-full"></div>
-        {steps.map((step, idx) => {
+        {steps.map((step) => {
           const isActive = currentStep === step.num;
           const isCompleted = currentStep > step.num;
 

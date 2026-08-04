@@ -47,3 +47,31 @@ export interface PaginatedResponse<T> {
   count: number;
   data: T[];
 }
+
+export interface IUser {
+  _id?: string;
+  id?: string;
+  name: string;
+  email: string;
+  phone?: string;
+  plan?: string;
+  role?: string;
+  createdAt?: string;
+  preferences?: {
+    darkMode?: boolean;
+    language?: string;
+    timezone?: string;
+    notifications?: Record<string, boolean>;
+  };
+}
+
+export interface CreateAgreementPayload {
+  title: string;
+  category: string;
+  description?: string;
+  value?: string;
+  expiresAt?: string;
+  parties: { name: string; email: string; role: string }[];
+  clauses: { order: number; content: string }[];
+}
+

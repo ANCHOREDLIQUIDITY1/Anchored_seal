@@ -30,7 +30,7 @@ const protect = async (req, res, next) => {
         req.user = currentUser;
         next();
     }
-    catch (err) {
+    catch {
         next(new AppError_1.default('Invalid or expired token. Please log in again.', 401));
     }
 };

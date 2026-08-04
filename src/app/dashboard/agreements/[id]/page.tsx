@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { Shield, X, AlertCircle } from "lucide-react";
 import { api } from "@/lib/api";
-import { IAgreement, IParty } from "@/types";
+import { IAgreement, IUser } from "@/types";
 
 export default function AgreementViewPage() {
   const params = useParams();
@@ -12,15 +12,19 @@ export default function AgreementViewPage() {
   const [agreement, setAgreement] = useState<IAgreement | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [currentUser, setCurrentUser] = useState<any>(null);
+  const [currentUser, setCurrentUser] = useState<IUser | null>(null);
 
   useEffect(() => {
     // Get current user to show "You" label
     const storedUser = localStorage.getItem("user");
     if (storedUser) {
-      try {
-        setCurrentUser(JSON.parse(storedUser));
-      } catch (e) {}
+      setTimeout(() => {
+        try {
+          setCurrentUser(JSON.parse(storedUser));
+        } catch (e: unknown) {
+          console.error(e);
+        }
+      }, 0);
     }
 
     const fetchAgreement = async () => {
@@ -28,8 +32,8 @@ export default function AgreementViewPage() {
         const id = params.id as string;
         const res = await api.agreements.getById(id);
         setAgreement(res.data);
-      } catch (err: any) {
-        setError(err.message || "Failed to load agreement");
+      } catch (err: unknown) {
+        setError(err instanceof Error ? err.message : "Failed to load agreement");
       } finally {
         setLoading(false);
       }

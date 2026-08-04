@@ -12,18 +12,26 @@ const crypto_1 = require("crypto");
 // 1. Create a new Agreement
 const createAgreement = async (req, res, next) => {
     try {
-        const { title, category, parties, clauses } = req.body;
+        const { title, category, description, value, expiresAt, parties, clauses } = req.body;
         const shortId = (0, crypto_1.randomUUID)().substring(0, 8);
         const newAgreement = await Agreement_1.Agreement.create({
             title,
             shortId,
             category,
+            description,
+            value,
+            expiresAt,
             creator: req.user?._id,
             parties: parties?.map((p) => ({
                 ...p,
                 token: (0, crypto_1.randomUUID)()
             })) || [],
-            clauses
+            clauses,
+            auditTrail: [{
+                    action: 'CREATED',
+                    actor: req.user?.email || 'Creator',
+                    timestamp: new Date()
+                }]
         });
         res.status(201).json({ success: true, data: newAgreement });
     }
@@ -116,7 +124,7 @@ const sendAgreement = async (req, res, next) => {
         // Trigger Email Service for parties
         for (const party of agreement.parties) {
             if (party.role !== 'creator') {
-                await EmailService_1.EmailService.sendInvitation(party.email, agreement._id.toString(), party.token);
+                await EmailService_1.EmailService.sendInvitation(party.email, String(agreement._id), party.token);
             }
         }
         res.status(200).json({ success: true, message: 'Agreement sent successfully', data: agreement });
@@ -174,7 +182,7 @@ const signAgreement = async (req, res, next) => {
             agreement.pdfHash = hash;
             await agreement.save();
             for (const p of agreement.parties) {
-                await EmailService_1.EmailService.sendCompletion(p.email, agreement._id.toString(), 'link-to-pdf');
+                await EmailService_1.EmailService.sendCompletion(p.email, String(agreement._id), 'link-to-pdf');
             }
         }
         res.status(200).json({ success: true, message: 'Agreement signed successfully' });
