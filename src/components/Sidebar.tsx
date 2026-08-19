@@ -117,7 +117,7 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
               {initials}
             </div>
             <div className="flex flex-col">
-              <span className="text-sm font-bold text-gray-900 truncate max-w-[140px]">{user.name}</span>
+              <span className="text-sm font-bold text-gray-900 truncate max-w-35">{user.name}</span>
               <span className="text-xs text-gray-500 capitalize">{user.plan} Plan</span>
             </div>
           </div>
