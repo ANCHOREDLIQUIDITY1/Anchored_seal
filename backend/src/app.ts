@@ -45,6 +45,10 @@ app.use(cookieParser());
 // Data sanitization against NoSQL query injection (Removed due to Express 5 compatibility issue)
 
 // 2. ROUTES
+app.get('/', (req: Request, res: Response) => {
+  res.status(200).json({ success: true, message: 'Welcome to the TrustSeal API!' });
+});
+
 app.get('/health', (req: Request, res: Response) => {
   res.status(200).json({ success: true, message: 'TrustSeal API is running.' });
 });
