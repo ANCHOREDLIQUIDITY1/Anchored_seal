@@ -25,10 +25,11 @@ export const globalErrorHandler = (
       message: err.message,
     });
   } else {
-    // Programming or other unknown error: don't leak error details
+    // Programming or other unknown error: return error details temporarily for debugging
     res.status(500).json({
       success: false,
-      message: 'Something went very wrong!',
+      message: err.message || 'Something went very wrong!',
+      stack: err.stack
     });
   }
 };
